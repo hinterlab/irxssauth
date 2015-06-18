@@ -23,5 +23,5 @@ Install this module using the composer then run the dev/build and flush the webs
 
 ## irxssauth.yml
 
-The internetrix staff records are stored on www.internetrix.net. The access details are configued in irxssauth.yml file. IRXDBUser is the database username, IRXDBPassword is the database password, IRXDBName is the name of the database, IRXServerIP is the IP address of www.internetrix.net (currently hosted on delta350), IRXSiteDomain is the domain and has to use the https to encrupt the data sent, IRXSiteAPIURL is the API url. Change the variables in the irxssauth.myl file when there are any changes with the hosting details or the API of RESTfulAPI module on www.internetrix.net.
+The internetrix staff records are stored on www.internetrix.net. The access details are configued in irxssauth.yml file. IRXDBUser is the database username, IRXDBPassword is the database password, IRXDBName is the name of the database, IRXServerIP is the IP address of www.internetrix.net (currently hosted on delta350), IRXSiteDomain is the domain and has to use the https to encrupt the data sent, IRXSiteAPIURL is the API url. Change the variables in the irxssauth.yml file should there any changes of the hosting server or the API of RESTfulAPI module are made on www.internetrix.net.
 
