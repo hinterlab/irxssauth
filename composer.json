@@ -1,0 +1,24 @@
+{
+	"name" : "silverstripe-modules/irxssauth",
+	"type" : "silverstripe-module",
+	"description" : "Member login authentication when using a @internetrix.com.au email, and the user is either an irxstaff or doesn't exist in the production website",
+	"license" : "BSD-3-Clause",
+	"keywords" : [
+		"silverstripe",
+		"authentication",
+		"irxssauth"
+	],
+	"authors" : [{
+			"name" : "Yuchen Liu",
+			"email" : "yuchen.liu@internetrix.com.au"
+		}
+	],
+	"require" : {
+		"php" : ">=5.3.2",
+		"silverstripe/framework" : "3.*",
+		"silverstripe/cms" : "3.*",
+	},
+	"extra" : {
+		"installer-name" : "irxssauth"
+	}
+}
