@@ -1,7 +1,7 @@
 {
 	"name" : "silverstripe-modules/irxssauth",
 	"type" : "silverstripe-module",
-	"description" : "Member login authentication when using a @internetrix.com.au email, and the user is either an irxstaff or doesn't exist in the production website",
+	"description" : "Member login authentication when using an internetrix.com.au email, and the user is either an irxstaff or doesn't exist in the production website",
 	"license" : "BSD-3-Clause",
 	"keywords" : [
 		"silverstripe",
@@ -20,5 +20,6 @@
 	},
 	"extra" : {
 		"installer-name" : "irxssauth"
-	}
+	},
+	"minimum-stability" : "dev"
 }
