@@ -14,9 +14,5 @@ Group:
   extensions:
     - IRXSSAuthGroupExtension
 IRXSSAuthenticator:
-  IRXDBUser: internetrix
-  IRXDBPassword: 4BtS6nzktFsemKj
-  IRXDBName: internetrix
-  IRXServerIP: '202.4.229.223'
   IRXSiteDomain: 'https://www.internetrix.net/'
   IRXSiteAPIURL: 'api/auth/login'
