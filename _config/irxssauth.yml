@@ -14,5 +14,5 @@ Group:
   extensions:
     - IRXSSAuthGroupExtension
 IRXSSAuthenticator:
-  IRXSiteDomain: 'https://www.internetrix.net/'
+  IRXSiteDomain: 'https://www.internetrix.com.au/'
   IRXSiteAPIURL: 'api/auth/login'
