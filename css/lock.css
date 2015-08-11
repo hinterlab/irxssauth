@@ -1,0 +1,11 @@
+#IRXSSAuthLoginForm_LoginForm:after {
+    content: '';
+    height: 44px;
+    width: 30px;
+    display: block;
+    float: right;
+    margin-top: -44px;
+    background-image: url(../images/auth.png);
+    background-repeat: no-repeat;
+    background-position: 0px 0px;
+}

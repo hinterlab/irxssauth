@@ -16,3 +16,6 @@ Group:
 IRXSSAuthenticator:
   IRXSiteDomain: 'https://www.internetrix.com.au/'
   IRXSiteAPIURL: 'api/auth/login'
+Controller:
+  extensions:
+    - ControllerExtension
