@@ -77,7 +77,9 @@ class IRXSSAuthenticator extends MemberAuthenticator {
 	}
 
 	public static function get_login_form(Controller $controller) {
-		return Object::create("IRXSSAuthLoginForm", $controller, "LoginForm");
+		return IRXSSAuthLoginForm::create($controller, "LoginForm")
+			->addExtraClass('IRXSSAuthLoginForm')
+			->setHTMLID('MemberLoginForm_LoginForm'); //need to set HTMLID so form messages from Security::permissionFailure continue to work 
 	}
 	
 }

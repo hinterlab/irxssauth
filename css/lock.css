@@ -1,4 +1,4 @@
-#IRXSSAuthLoginForm_LoginForm:after {
+.IRXSSAuthLoginForm:after {
     content: '';
     height: 44px;
     width: 30px;
