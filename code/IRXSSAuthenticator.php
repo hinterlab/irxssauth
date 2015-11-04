@@ -13,17 +13,21 @@ class IRXSSAuthenticator extends MemberAuthenticator {
 	 * @see Security::setDefaultAdmin()
 	 */
 	public static function authenticate($RAW_data, Form $form = null) {
+		
+		
+		
 		if(array_key_exists('Email', $RAW_data) && $RAW_data['Email']){
 			$SQL_user = Convert::raw2sql($RAW_data['Email']);
 		} else {
 			return false;
 		}
 		
+		$identifier_field = Member::config()->unique_identifier_field;
+		
 		$member = null;
 		$email 	= $SQL_user;
-		$memberRecord = array();
 		$member = Member::get()
-			->filter(Member::config()->unique_identifier_field, $SQL_user)
+			->filter($identifier_field, $SQL_user)
 			->first();
 
 		if(!IRXSSAuthMemberExtension::is_internetrix_email($email) || ($member && !$member->IRXstaff)){
@@ -60,7 +64,11 @@ class IRXSSAuthenticator extends MemberAuthenticator {
 				$member = new Member();
 			}
 			
-			$member->Email 		= $email;
+			$member->$identifier_field = $email;
+			if($identifier_field != 'Email'){
+				$member->Email = $email;
+			}
+			
 			$member->IRXstaff 	= true;
 			
 			$member->write();
