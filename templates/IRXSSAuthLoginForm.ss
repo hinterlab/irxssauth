@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="/irxssauth/css/lock.css" />
+
 <% if $IncludeFormTag %>
 <form $AttributesHTML>
 <% end_if %>
