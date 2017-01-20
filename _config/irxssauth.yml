@@ -20,7 +20,6 @@ IRXBasicAuth:
   StagingDomainFeaturedStrings:
     - 'sansa.internetrix.net'
     - 'braavos.internetrix.net'
-    - '.local'
 Controller:
   extensions:
     - 'IRXAuthControllerExtension'
