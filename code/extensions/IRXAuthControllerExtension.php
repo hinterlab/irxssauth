@@ -10,4 +10,11 @@ class IRXAuthControllerExtension extends DataExtension {
 			}
 		}
 	}
+	
+	public function protect_site_from_indexing() {
+		$config = Config::inst()->forClass('IRXBasicAuth');
+		if($config->entire_site_protected) {
+			self::requireLogin($config->entire_site_protected_message, $config->entire_site_protected_code, false);
+		}
+	}
 }
