@@ -1,7 +1,5 @@
 <?php 
 
-define('IRX_USE_STAGE_AUTH', true);
-
 Authenticator::register('IRXSSAuthenticator');
 Authenticator::unregister('MemberAuthenticator');
 
