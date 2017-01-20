@@ -75,11 +75,14 @@ class IRXSSAuthenticator extends MemberAuthenticator {
 			if(!$member->inGroupNoFilter('irx-staff')){
 				$member->addToGroupByCodeNoFilter('irx-staff');
 			}
+			
+			Session::clear('BackURL');
+			
 			return $member;
 			
 		}
 		
-		return false;
+		return null;
 		
 			
 	}

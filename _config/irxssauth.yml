@@ -16,3 +16,11 @@ Group:
 IRXSSAuthenticator:
   IRXSiteDomain: 'https://www.internetrix.com.au/'
   IRXSiteAPIURL: 'api/auth/login'
+IRXBasicAuth:
+  StagingDomainFeaturedStrings:
+    - 'sansa.internetrix.net'
+    - 'braavos.internetrix.net'
+    - '.local'
+Controller:
+  extensions:
+    - 'IRXAuthControllerExtension'
