@@ -163,7 +163,7 @@ class IRXBasicAuth {
 	 * regular log-in form. This can be useful for staging sites, where you want to hide the site
 	 * away from prying eyes, but still be able to allow live site visited normally.
 	 *
-	 * define('IRX_USE_STAGE_AUTH', true); is set by default
+	 * define('IRX_USE_STAGE_AUTH', true); is not set by default
 	 *
 	 * @param boolean $protect Set this to false to disable protection.
 	 * @param String $code {@link Permission} code that is required from the user.
@@ -195,7 +195,7 @@ class IRXBasicAuth {
 	 * This is a helper function used by {@link Controller::init()}.
 	 *
 	 * If you want to enabled protection (rather than enforcing it),
-	 * please use {@link protect_entire_site()}.
+	 * please use {@link protect_staging_site()}.
 	 */
 	public static function protect_staging_site_if_necessary() {
 		$config = Config::inst()->forClass('IRXBasicAuth');

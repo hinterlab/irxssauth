@@ -21,7 +21,11 @@ This module replaces the default member login authenticator with an customized a
 
 Install this module using the composer then run the dev/build and flush the website. 
 
+## Protect the staging sites
+Put define('IRX_USE_STAGE_AUTH', true); in _ss_environment.php file to enable protecting the staging sites from viewed by external visitors. This also add a noindex tag to the page head to prevent staging sites from indexed by search engines like Google.
+Remove define('IRX_USE_STAGE_AUTH', true); or set it to be false when you visit the site for the first time of this session and need to do dev/build or a flush.
+
 ## irxssauth.yml
 
 The internetrix staff records are stored on www.internetrix.net. The access details are configued in irxssauth.yml file. IRXDBUser is the database username, IRXDBPassword is the database password, IRXDBName is the name of the database, IRXServerIP is the IP address of www.internetrix.net (currently hosted on delta350), IRXSiteDomain is the domain and has to use the https to encrupt the data sent, IRXSiteAPIURL is the API url. Change the variables in the irxssauth.yml file should there any changes of the hosting server or the API of RESTfulAPI module are made on www.internetrix.net.
-
+It also defines the staging URL featured strings, you can copy and paste this file into mysite/_config to modify the staging URLs based on your need.
