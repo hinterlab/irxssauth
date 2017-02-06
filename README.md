@@ -3,6 +3,7 @@
 ## Requirements
 
 * SilverStripe 3.1
+* HTTP_AUTHORIZATION enabled for the CGI version of PHP
 * [RESTful API](https://github.com/colymba/silverstripe-restfulapi) on the https://www.internetrix.net/ website.
 
 ## Maintainers
@@ -11,21 +12,33 @@
 
 ## Description
 
-This module replaces the default member login authenticator with an customized authenticaor. It implements irx staff member login authentication when a user is trying to use a @internetrix.com.au email, and the user is either an irxstaff or doesn't exist in the production website.
+This module replaces the default member login authenticator with an customized authenticaor. It implements irx staff member login authentication when a user is trying to use a @internetrix.com.au email, and the user is either an irxstaff or doesn't exist in the production website. It also optionally adds BasicAuth to staging sites to prevent indexing and other unwanted visitors.
 
 ## Installation with [Composer](https://getcomposer.org/)
 
 ```composer require "silverstripe-modules/irxssauth"```
 
+Install this module using the composer then run a dev/build and flush the website. 
+
+Optionally add the following two lines to the top of the root .htaccess file for staging site protection:
+
+`## Enable FCGI HTTP Authorization Header ###`
+
+`SetEnvIf Authorization .+ HTTP_AUTHORIZATION=$0`
+
 ## Usage
+To enable protection on staging site domains from access by external visitors, put the following in _ss_environment.php file: 
 
-Install this module using the composer then run the dev/build and flush the website. 
+`define('IRX_USE_STAGE_AUTH', true);`
+IMPORTANT: Remove or set it to be false when you visit the site for the first time of this session and need to do dev/build or a flush.
 
-## Protect the staging sites
-Put define('IRX_USE_STAGE_AUTH', true); in _ss_environment.php file to enable protecting the staging sites from viewed by external visitors. This also add a noindex tag to the page head to prevent staging sites from indexed by search engines like Google.
-Remove define('IRX_USE_STAGE_AUTH', true); or set it to be false when you visit the site for the first time of this session and need to do dev/build or a flush.
+
+This can also trigger a "noindex" tag to be added to pages and prevent staging sites from indexing by search engines like Google, just put this in the < head > of the main Page.ss template:
+
+`<% if $protect_site_from_indexing %><meta name="robots" content="noindex"><% end_if %>`
+
 
 ## irxssauth.yml
 
-The internetrix staff records are stored on www.internetrix.net. The access details are configued in irxssauth.yml file. IRXDBUser is the database username, IRXDBPassword is the database password, IRXDBName is the name of the database, IRXServerIP is the IP address of www.internetrix.net (currently hosted on delta350), IRXSiteDomain is the domain and has to use the https to encrupt the data sent, IRXSiteAPIURL is the API url. Change the variables in the irxssauth.yml file should there any changes of the hosting server or the API of RESTfulAPI module are made on www.internetrix.net.
-It also defines the staging URL featured strings, you can copy and paste this file into mysite/_config to modify the staging URLs based on your need.
+The access details are configued in irxssauth.yml file. IRXSiteDomain is the domain to connect to and it has to use https to encrypt the data sent.
+It also defines the Staging Domain Featured Strings, these are matched aginst the domain to see if protection should be applied.
