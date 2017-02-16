@@ -53,6 +53,8 @@ class IRXBasicAuth {
 	 * Set this value through {@link protect_entire_site()}.
 	 */
 	private static $staging_site_protected_message = "SilverStripe test website. Use your CMS login.";
+	
+	private static $_already_tried_to_auto_log_in = false;
 
 	/**
 	 * Require basic authentication.  Will request a username and password if none is given.
@@ -71,14 +73,20 @@ class IRXBasicAuth {
 		$isRunningTests = (class_exists('SapphireTest', false) && SapphireTest::is_running_test());
 		if(!Security::database_is_ready() || (Director::is_cli() && !$isRunningTests)) return true;
 
-                /*
-                 * Enable HTTP Basic authentication workaround for PHP running in CGI mode with Apache
-                 * Depending on server configuration the auth header may be in HTTP_AUTHORIZATION or
-                 * REDIRECT_HTTP_AUTHORIZATION
-                 *
-                 * The follow rewrite rule must be in the sites .htaccess file to enable this workaround
-                 * RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
-                 */
+		$member = Member::currentUser();
+		
+		if(!($member && $member->ID) && !self::$_already_tried_to_auto_log_in){
+			$member = self::autoAuth();
+		}
+		
+		/*
+		 * Enable HTTP Basic authentication workaround for PHP running in CGI mode with Apache
+		 * Depending on server configuration the auth header may be in HTTP_AUTHORIZATION or
+		 * REDIRECT_HTTP_AUTHORIZATION
+		 *
+		 * The follow rewrite rule must be in the sites .htaccess file to enable this workaround
+		 * RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+		 */
 		$authHeader = (isset($_SERVER['HTTP_AUTHORIZATION']) ? $_SERVER['HTTP_AUTHORIZATION'] :
 			      (isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION']) ? $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] : null));
 		$matches = array();
@@ -89,8 +97,7 @@ class IRXBasicAuth {
 			$_SERVER['PHP_AUTH_PW'] = strip_tags($password);
 		}
 
-		$member = null;
-		if(isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW'])) {
+		if(isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW']) && !$member) {
 			$member = IRXSSAuthenticator::authenticate(array(
 				'Email' => $_SERVER['PHP_AUTH_USER'],
 				'Password' => $_SERVER['PHP_AUTH_PW'],
@@ -129,6 +136,13 @@ class IRXBasicAuth {
 			$e->setResponse($response);
 			throw $e;
 		}
+		
+		$generator = new RandomGenerator();
+		$token = $generator->randomToken('sha1');
+		$hash = $member->encryptWithUserSettings($token);
+		$member->IRXSSAuthLoginToken = $hash;
+		$member->write();
+		Cookie::set('isa_enc', $member->ID . ':' . $token, 7, null, null, null, true);
 
 		return $member;
 	}
@@ -209,6 +223,37 @@ class IRXBasicAuth {
 		if($config->staging_site_protected && $isStaging) {
 			self::requireLogin($config->staging_site_protected_message, $config->entire_site_protected_code, false);
 		}
+	}
+	
+	public static function autoAuth(){
+		// Don't bother trying this multiple times
+		self::$_already_tried_to_auto_log_in = true;
+		
+		if((defined('SS_USE_BASIC_AUTH') && SS_USE_BASIC_AUTH)
+			|| strpos(Cookie::get('isa_enc'), ':') === false
+			|| Session::get("loggedInAs")
+			|| !Security::database_is_ready()
+		) {
+			return null;
+		}
+
+		list($uid, $token) = explode(':', Cookie::get('isa_enc'), 2);
+
+		if (!$uid || !$token) {
+			return;
+		}
+
+		$member = DataObject::get_by_id("Member", $uid);
+
+		// check if autologin token matches
+		if($member) {
+			$hash = $member->encryptWithUserSettings($token);
+			if(!$member->IRXSSAuthLoginToken || $member->IRXSSAuthLoginToken !== $hash) {
+				$member = null;
+			}
+		}
+		
+		return $member;
 	}
 
 }
