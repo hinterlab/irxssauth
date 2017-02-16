@@ -73,7 +73,10 @@ class IRXBasicAuth {
 		$isRunningTests = (class_exists('SapphireTest', false) && SapphireTest::is_running_test());
 		if(!Security::database_is_ready() || (Director::is_cli() && !$isRunningTests)) return true;
 
-		$member = Member::currentUser();
+		$member = null;
+		$renewAuthToken = false;
+		
+		if($tryUsingSessionLogin) $member = Member::currentUser();
 		
 		if(!($member && $member->ID) && !self::$_already_tried_to_auto_log_in){
 			$member = self::autoAuth();
@@ -97,14 +100,15 @@ class IRXBasicAuth {
 			$_SERVER['PHP_AUTH_PW'] = strip_tags($password);
 		}
 
-		if(isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW']) && !$member) {
+		if(isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW']) && !($member && $member->ID)) {
 			$member = IRXSSAuthenticator::authenticate(array(
 				'Email' => $_SERVER['PHP_AUTH_USER'],
 				'Password' => $_SERVER['PHP_AUTH_PW'],
 			), null);
+			if($member && $member->ID){
+				$renewAuthToken = true;
+			}
 		}
-
-		if(!$member && $tryUsingSessionLogin) $member = Member::currentUser();
 
 		// If we've failed the authentication mechanism, then show the login form
 		if(!$member) {
@@ -137,12 +141,14 @@ class IRXBasicAuth {
 			throw $e;
 		}
 		
-		$generator = new RandomGenerator();
-		$token = $generator->randomToken('sha1');
-		$hash = $member->encryptWithUserSettings($token);
-		$member->IRXSSAuthLoginToken = $hash;
-		$member->write();
-		Cookie::set('isa_enc', $member->ID . ':' . $token, 7, null, null, null, true);
+		if($renewAuthToken){
+			$generator = new RandomGenerator();
+			$token = $generator->randomToken('sha1');
+			$hash = $member->encryptWithUserSettings($token);
+			$member->IRXSSAuthLoginToken = $hash;
+			$member->write();
+			Cookie::set('isa_enc', $member->ID . ':' . $token, 7, null, null, null, true);
+		}
 
 		return $member;
 	}
@@ -240,7 +246,7 @@ class IRXBasicAuth {
 		list($uid, $token) = explode(':', Cookie::get('isa_enc'), 2);
 
 		if (!$uid || !$token) {
-			return;
+			return null;
 		}
 
 		$member = DataObject::get_by_id("Member", $uid);

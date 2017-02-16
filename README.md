@@ -23,10 +23,13 @@ Install this module using the composer then run a dev/build and flush the websit
 Optionally add the following two lines to the top of the root .htaccess file for staging site protection:
 
 `## Enable FCGI HTTP Authorization Header ###`
-
 `SetEnvIf Authorization .+ HTTP_AUTHORIZATION=$0`
 
+Or put this redirect rule as a workaround
+`RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]`
+
 ## Usage
+
 To enable protection on staging site domains from access by external visitors, put the following in _ss_environment.php file: 
 
 `define('IRX_USE_STAGE_AUTH', true);`
@@ -42,3 +45,6 @@ This can also trigger a "noindex" tag to be added to pages and prevent staging s
 
 The access details are configued in irxssauth.yml file. IRXSiteDomain is the domain to connect to and it has to use https to encrypt the data sent.
 It also defines the Staging Domain Featured Strings, these are matched aginst the domain to see if protection should be applied.
+
+## Auth Remember
+Successful HTTP auth on the authenticated device will be remembered for 7 days of a certain domain. Any succeful HTTP Auth from another device or in an incognito window will automatically invalid the previously authenticated device.
