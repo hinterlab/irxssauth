@@ -16,6 +16,9 @@ Group:
 IRXSSAuthenticator:
   IRXSiteDomain: 'https://www.internetrix.com.au/'
   IRXSiteAPIURL: 'api/auth/login'
+  IRXEmails:
+    - 'internetrix.com.au'
+    - 'irx.io'
 IRXBasicAuth:
   StagingDomainFeaturedStrings:
     - 'sansa.internetrix.net'

@@ -22,7 +22,17 @@ class IRXSSAuthMemberExtension extends DataExtension {
 		
 		$email = explode('@', $email);
 		
-		if(count($email) == 2 && isset($email[1]) && $email[1] == 'internetrix.com.au'){
+		$irxEmails = IRXSSAuthenticator::config()->IRXEmails;
+		
+		if(!isset($irxEmails)){
+			return false;
+		}
+		
+		if(!is_array($irxEmails)){
+			$irxEmails = explode(',',$irxEmails);
+		}
+		
+		if(count($email) == 2 && isset($email[1]) && in_array($email[1], $irxEmails)){
 			return true;
 		}
 		
