@@ -22,7 +22,7 @@ class IRXSSAuthMemberExtension extends DataExtension {
 		
 		$email = explode('@', $email);
 		
-		$irxEmails = IRXSSAuthenticator::config()->IRXEmails;
+		$irxEmails = IRXSSAuthenticator::config()->IRXEmailDomains;
 		
 		if(!isset($irxEmails)){
 			return false;
