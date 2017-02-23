@@ -218,6 +218,11 @@ class IRXBasicAuth {
 	 * please use {@link protect_staging_site()}.
 	 */
 	public static function protect_staging_site_if_necessary() {
+		
+		if(!isset($_SERVER['HTTP_HOST']) || !$_SERVER['HTTP_HOST']){
+			return false;
+		}
+		
 		$config = Config::inst()->forClass('IRXBasicAuth');
 		$stagingDomains = $config->StagingDomainFeaturedStrings;
 		$isStaging = false;
