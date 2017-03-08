@@ -9,6 +9,7 @@ class IRXSSAuthMemberExtension extends DataExtension {
 	
 	public function updateCMSFields(FieldList $fields){
 		$fields->removeByName('IRXstaff');
+		$fields->removeByName('IRXSSAuthLoginToken');
 	}
 	
 	public function isInternetrixEmail(){
