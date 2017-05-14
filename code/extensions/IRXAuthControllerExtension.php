@@ -22,7 +22,7 @@ class IRXAuthControllerExtension extends DataExtension {
 				$isStaging = false;
 				
 				foreach($stagingDomains as $domain){
-					if( strpos( $_SERVER['HTTP_HOST'], $domain ) !== false) $isStaging = true;
+					if( array_key_exists('HTTP_HOST', $_SERVER) && strpos( $_SERVER['HTTP_HOST'], $domain ) !== false) $isStaging = true;
 				}
 				
 				if($config->staging_site_protected && $isStaging) {
