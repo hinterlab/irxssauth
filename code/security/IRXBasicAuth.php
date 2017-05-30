@@ -141,11 +141,20 @@ class IRXBasicAuth {
 			throw $e;
 		}
 		
-		if($renewAuthToken){
+		$domain = array_key_exists('HTTP_HOST', $_SERVER) ? Convert::raw2sql($_SERVER['HTTP_HOST']) : '';
+		
+		if($renewAuthToken && $domain){
 			$generator = new RandomGenerator();
 			$token = $generator->randomToken('sha1');
 			$hash = $member->encryptWithUserSettings($token);
-			$member->IRXSSAuthLoginToken = $hash;
+			
+			$authTokens = Convert::json2array($member->IRXSSAuthLoginToken);
+			if(!$authTokens || !is_array($authTokens) || empty($authTokens)){
+				$authTokens = array();
+			}
+			$authTokens[$domain] = $hash;
+			
+			$member->IRXSSAuthLoginToken = Convert::array2json($authTokens);
 			$member->write();
 			Cookie::set('isa_enc', $member->ID . ':' . $token, 7, null, null, null, true);
 		}
@@ -228,7 +237,7 @@ class IRXBasicAuth {
 		$isStaging = false;
 		
 		foreach($stagingDomains as $domain){
-			if( strpos( $_SERVER['HTTP_HOST'], $domain ) !== false) $isStaging = true;
+			if( array_key_exists('HTTP_HOST', $_SERVER) && strpos( $_SERVER['HTTP_HOST'], $domain ) !== false) $isStaging = true;
 		}
 		
 		if($config->staging_site_protected && $isStaging) {
@@ -259,7 +268,10 @@ class IRXBasicAuth {
 		// check if autologin token matches
 		if($member) {
 			$hash = $member->encryptWithUserSettings($token);
-			if(!$member->IRXSSAuthLoginToken || $member->IRXSSAuthLoginToken !== $hash) {
+			$authTokens = Convert::json2array($member->IRXSSAuthLoginToken);
+			$domain = array_key_exists('HTTP_HOST', $_SERVER) ? Convert::raw2sql($_SERVER['HTTP_HOST']) : '';
+			
+			if(!$authTokens || !is_array($authTokens) || empty($authTokens) || !$domain || !array_key_exists($domain, $authTokens) || $authTokens[$domain] !== $hash) {
 				$member = null;
 			}
 		}

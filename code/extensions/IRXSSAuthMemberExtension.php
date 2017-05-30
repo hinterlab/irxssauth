@@ -3,8 +3,8 @@
 class IRXSSAuthMemberExtension extends DataExtension {
 	
 	private static $db = array(
-		'IRXstaff' => 'Boolean',
-		'IRXSSAuthLoginToken'	=> 'Varchar(160)'	// Note: this currently holds a hash, not a token.
+		'IRXstaff'				=> 'Boolean',
+		'IRXSSAuthLoginToken'	=> 'Text'	// Note: this currently holds a hash, not a token.
 	);
 	
 	public function updateCMSFields(FieldList $fields){
