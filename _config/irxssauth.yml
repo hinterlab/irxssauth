@@ -21,8 +21,8 @@ IRXSSAuthenticator:
     - 'irx.io'
 IRXBasicAuth:
   StagingDomainFeaturedStrings:
-    - 'sansa.internetrix.net'
-    - 'braavos.internetrix.net'
+    - 'anchor.net.au'
+    - 'internetrix.net'
 Controller:
   extensions:
     - 'IRXAuthControllerExtension'
