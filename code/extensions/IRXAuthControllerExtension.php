@@ -9,6 +9,7 @@ class IRXAuthControllerExtension extends DataExtension {
 				IRXBasicAuth::protect_staging_site_if_necessary();
 			}
 		}
+		Requirements::javascript('irxssauth/javascript/toggle.js');
 	}
 	
 	public function protect_site_from_indexing() {
