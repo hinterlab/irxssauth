@@ -1,4 +1,5 @@
 <?php
+namespace Internetrix\Irxssauth;
 /**
  * Provides an interface to HTTP basic authentication.
  *

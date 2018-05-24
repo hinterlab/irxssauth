@@ -1,5 +1,5 @@
 <?php
-
+namespace Internetrix\Irxssauth;
 class IRXSSAuthMemberExtension extends DataExtension {
 	
 	private static $db = array(

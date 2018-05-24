@@ -1,4 +1,5 @@
 <?php
+namespace Internetrix\Irxssauth;
 class IRXSSAuthGroupExtension extends DataExtension {
 	
 	/**

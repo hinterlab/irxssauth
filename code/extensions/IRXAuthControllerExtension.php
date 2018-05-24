@@ -1,4 +1,5 @@
 <?php
+namespace Internetrix\Irxssauth;
 class IRXAuthControllerExtension extends DataExtension {
 	
 	function onBeforeInit() {
