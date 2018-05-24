@@ -1,5 +1,7 @@
 <?php
 namespace Internetrix\Irxssauth;
+use SilverStripe\Security\MemberAuthenticator\MemberLoginForm;
+
 class IRXSSAuthLoginForm extends MemberLoginForm {
 	
 	protected $authenticator_class = 'IRXSSAuthenticator';

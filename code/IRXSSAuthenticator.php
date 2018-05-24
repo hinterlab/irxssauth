@@ -1,5 +1,13 @@
 <?php
 namespace Internetrix\Irxssauth;
+use SilverStripe\Control\Controller;
+use SilverStripe\Control\HTTPRequest;
+use SilverStripe\Core\Convert;
+use SilverStripe\Forms\Form;
+use SilverStripe\ORM\ValidationResult;
+use SilverStripe\Security\Member;
+use SilverStripe\Security\MemberAuthenticator\MemberAuthenticator;
+
 class IRXSSAuthenticator extends MemberAuthenticator {
 	
 	/**
@@ -13,10 +21,11 @@ class IRXSSAuthenticator extends MemberAuthenticator {
 	 *                     the member object
 	 * @see Security::setDefaultAdmin()
 	 */
-	public static function authenticate($RAW_data, Form $form = null) {
+//	public function authenticate($RAW_data, Form $form = null) {
+    public function authenticate(array $data, HTTPRequest $request, ValidationResult &$result = null) {
 		
-		if(array_key_exists('Email', $RAW_data) && $RAW_data['Email']){
-			$SQL_user = Convert::raw2sql($RAW_data['Email']);
+		if(array_key_exists('Email', $data) && $data['Email']){
+			$SQL_user = Convert::raw2sql($data['Email']);
 		} else {
 			return false;
 		}
@@ -30,11 +39,11 @@ class IRXSSAuthenticator extends MemberAuthenticator {
 			->first();
 
 		if(!IRXSSAuthMemberExtension::is_internetrix_email($email) || ($member && !$member->IRXstaff)){
-			return parent::authenticate($RAW_data, $form);
+			return parent::authenticate($data, $request,$result);
 		}
 		
 		$timeout = 40;
-		$postfields = array('email'=>$email, 'pwd'=> $RAW_data['Password']);
+		$postfields = array('email'=>$email, 'pwd'=> $data['Password']);
 		$IRXSSAuthConfig = IRXSSAuthenticator::config();
 		
 		//open connection
@@ -74,8 +83,8 @@ class IRXSSAuthenticator extends MemberAuthenticator {
 			if(!$member->inGroupNoFilter('irx-staff')){
 				$member->addToGroupByCodeNoFilter('irx-staff');
 			}
-			
-			Session::clear('BackURL');
+
+            $request->getSession()->clear('BackURL');
 			
 			return $member;
 			

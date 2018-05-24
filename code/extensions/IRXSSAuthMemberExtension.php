@@ -1,5 +1,10 @@
 <?php
 namespace Internetrix\Irxssauth;
+use SilverStripe\Core\Convert;
+use SilverStripe\Forms\FieldList;
+use SilverStripe\ORM\DataExtension;
+use SilverStripe\Security\Group;
+
 class IRXSSAuthMemberExtension extends DataExtension {
 	
 	private static $db = array(

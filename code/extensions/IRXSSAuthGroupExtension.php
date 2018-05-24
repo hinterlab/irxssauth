@@ -1,5 +1,11 @@
 <?php
 namespace Internetrix\Irxssauth;
+use SilverStripe\ORM\DataExtension;
+use SilverStripe\ORM\DataQuery;
+use SilverStripe\Security\Group;
+use SilverStripe\Security\Member;
+use SilverStripe\Security\Permission;
+
 class IRXSSAuthGroupExtension extends DataExtension {
 	
 	/**

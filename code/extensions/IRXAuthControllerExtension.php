@@ -1,5 +1,9 @@
 <?php
 namespace Internetrix\Irxssauth;
+use SilverStripe\Core\Config\Config;
+use SilverStripe\ORM\DataExtension;
+use SilverStripe\View\Requirements;
+
 class IRXAuthControllerExtension extends DataExtension {
 	
 	function onBeforeInit() {
