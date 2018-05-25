@@ -3,26 +3,26 @@ Name: irxssauth
 After: 'framework/*','cms/*'
 ---
 #IRX auth ext
-Authenticator:
+SilverStripe\Security\Authenticator:
   authenticators:
     - IRXSSAuthenticator
   default_authenticator: IRXSSAuthenticator
-Member:
+SilverStripe\Security\Member:
   extensions:
     - IRXSSAuthMemberExtension
-Group:
+SilverStripe\Security\Group:
   extensions:
     - IRXSSAuthGroupExtension
-IRXSSAuthenticator:
+Internetrix\Irxssauth\IRXSSAuthenticator:
   IRXSiteDomain: 'https://www.internetrix.com.au/'
   IRXSiteAPIURL: 'api/auth/verify'
   IRXEmailDomains:
     - 'internetrix.com.au'
     - 'irx.io'
-IRXBasicAuth:
+Internetrix\Irxssauth\IRXBasicAuth:
   StagingDomainFeaturedStrings:
     - 'anchor.net.au'
     - 'internetrix.net'
-Controller:
+SilverStripe\Control\Controller:
   extensions:
     - 'IRXAuthControllerExtension'
