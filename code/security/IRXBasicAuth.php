@@ -1,5 +1,16 @@
 <?php
 namespace Internetrix\Irxssauth;
+
+use SilverStripe\Control\Cookie;
+use SilverStripe\Control\Director;
+use SilverStripe\Core\Convert;
+use SilverStripe\Dev\SapphireTest;
+use SilverStripe\ORM\DataObject;
+use SilverStripe\Security\Member;
+use SilverStripe\Security\Permission;
+use SilverStripe\Security\RandomGenerator;
+use SilverStripe\Security\Security;
+
 /**
  * Provides an interface to HTTP basic authentication.
  *
@@ -57,111 +68,122 @@ class IRXBasicAuth {
 	
 	private static $_already_tried_to_auto_log_in = false;
 
-	/**
-	 * Require basic authentication.  Will request a username and password if none is given.
-	 *
-	 * Used by {@link Controller::init()}.
-	 *
-	 * @throws SS_HTTPResponse_Exception
-	 *
-	 * @param string $realm
-	 * @param string|array $permissionCode Optional
-	 * @param boolean $tryUsingSessionLogin If true, then the method with authenticate against the
-	 *  session log-in if those credentials are disabled.
-	 * @return Member $member
-	 */
-	public static function requireLogin($realm, $permissionCode = null, $tryUsingSessionLogin = true) {
-		$isRunningTests = (class_exists('SapphireTest', false) && SapphireTest::is_running_test());
-		if(!Security::database_is_ready() || (Director::is_cli() && !$isRunningTests)) return true;
+    /**
+     * Require basic authentication.  Will request a username and password if none is given.
+     *
+     * Used by {@link Controller::init()}.
+     *
+     *
+     * @param HTTPRequest $request
+     * @param string $realm
+     * @param string|array $permissionCode Optional
+     * @param boolean $tryUsingSessionLogin If true, then the method with authenticate against the
+     *  session log-in if those credentials are disabled.
+     * @return bool|Member
+     * @throws HTTPResponse_Exception
+     */
+    public static function requireLogin(
+        HTTPRequest $request,
+        $realm,
+        $permissionCode = null,
+        $tryUsingSessionLogin = true
+    ) {
+        if ((Director::is_cli() && static::config()->get('ignore_cli'))) {
+            return true;
+        }
 
-		$member = null;
-		$renewAuthToken = false;
-		
-		if($tryUsingSessionLogin) $member = Member::currentUser();
-		
-		if(!($member && $member->ID) && !self::$_already_tried_to_auto_log_in){
-			$member = self::autoAuth();
-		}
-		
-		/*
-		 * Enable HTTP Basic authentication workaround for PHP running in CGI mode with Apache
-		 * Depending on server configuration the auth header may be in HTTP_AUTHORIZATION or
-		 * REDIRECT_HTTP_AUTHORIZATION
-		 *
-		 * The follow rewrite rule must be in the sites .htaccess file to enable this workaround
-		 * RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
-		 */
-		$authHeader = (isset($_SERVER['HTTP_AUTHORIZATION']) ? $_SERVER['HTTP_AUTHORIZATION'] :
-			      (isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION']) ? $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] : null));
-		$matches = array();
-		if ($authHeader &&
-                        preg_match('/Basic\s+(.*)$/i', $authHeader, $matches)) {
-			list($name, $password) = explode(':', base64_decode($matches[1]));
-			$_SERVER['PHP_AUTH_USER'] = strip_tags($name);
-			$_SERVER['PHP_AUTH_PW'] = strip_tags($password);
-		}
+        $renewAuthToken = false;
+        $member = null;
 
-		if(isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW']) && !($member && $member->ID)) {
-			$member = IRXSSAuthenticator::authenticate(array(
-				'Email' => $_SERVER['PHP_AUTH_USER'],
-				'Password' => $_SERVER['PHP_AUTH_PW'],
-			), null);
-			if($member && $member->ID){
-				$renewAuthToken = true;
-			}
-		}
+        try {
+            if ($request->getHeader('PHP_AUTH_USER') && $request->getHeader('PHP_AUTH_PW')) {
+                /** @var MemberAuthenticator $authenticator */
+                $authenticators = Security::singleton()->getApplicableAuthenticators(Authenticator::LOGIN);
 
-		// If we've failed the authentication mechanism, then show the login form
-		if(!$member) {
-			$response = new SS_HTTPResponse(null, 401);
-			$response->addHeader('WWW-Authenticate', "Basic realm=\"$realm\"");
+                $member = $authenticator->authenticate([
+                    'Email' => $request->getHeader('PHP_AUTH_USER'),
+                    'Password' => $request->getHeader('PHP_AUTH_PW'),
+                ], $request);
+                if ($member instanceof Member && $member->ID) {
+                    $renewAuthToken = true;
+                }
 
-			if(isset($_SERVER['PHP_AUTH_USER'])) {
-				$response->setBody(_t('BasicAuth.ERRORNOTREC', "That username / password isn't recognised"));
-			} else {
-				$response->setBody(_t('BasicAuth.ENTERINFO', "Please enter a username and password."));
-			}
+            }
+        } catch (DatabaseException $e) {
+            // Database isn't ready, let people in
+            return true;
+        }
 
-			// Exception is caught by RequestHandler->handleRequest() and will halt further execution
-			$e = new SS_HTTPResponse_Exception(null, 401);
-			$e->setResponse($response);
-			throw $e;
-		}
+        if (!$member && $tryUsingSessionLogin) {
+            $member = Security::getCurrentUser();
+        }
 
-		if($permissionCode && !Permission::checkMember($member->ID, $permissionCode) && !$member->IRXstaff) {
-			$response = new SS_HTTPResponse(null, 401);
-			$response->addHeader('WWW-Authenticate', "Basic realm=\"$realm\"");
+        // If we've failed the authentication mechanism, then show the login form
+        if (!$member) {
+            $response = new HTTPResponse(null, 401);
+            $response->addHeader('WWW-Authenticate', "Basic realm=\"$realm\"");
 
-			if(isset($_SERVER['PHP_AUTH_USER'])) {
-				$response->setBody(_t('BasicAuth.ERRORNOTADMIN', "That user is not an administrator."));
-			}
+            if ($request->getHeader('PHP_AUTH_USER')) {
+                $response->setBody(
+                    _t(
+                        'SilverStripe\\Security\\BasicAuth.ERRORNOTREC',
+                        "That username / password isn't recognised"
+                    )
+                );
+            } else {
+                $response->setBody(
+                    _t(
+                        'SilverStripe\\Security\\BasicAuth.ENTERINFO',
+                        'Please enter a username and password.'
+                    )
+                );
+            }
 
-			// Exception is caught by RequestHandler->handleRequest() and will halt further execution
-			$e = new SS_HTTPResponse_Exception(null, 401);
-			$e->setResponse($response);
-			throw $e;
-		}
-		
-		$domain = array_key_exists('HTTP_HOST', $_SERVER) ? Convert::raw2sql($_SERVER['HTTP_HOST']) : '';
-		
-		if($renewAuthToken && $domain){
-			$generator = new RandomGenerator();
-			$token = $generator->randomToken('sha1');
-			$hash = $member->encryptWithUserSettings($token);
-			
-			$authTokens = Convert::json2array($member->IRXSSAuthLoginToken);
-			if(!$authTokens || !is_array($authTokens) || empty($authTokens)){
-				$authTokens = array();
-			}
-			$authTokens[$domain] = $hash;
-			
-			$member->IRXSSAuthLoginToken = Convert::array2json($authTokens);
-			$member->write();
-			Cookie::set('isa_enc', $member->ID . ':' . $token, 7, null, null, null, true);
-		}
+            // Exception is caught by RequestHandler->handleRequest() and will halt further execution
+            $e = new HTTPResponse_Exception(null, 401);
+            $e->setResponse($response);
+            throw $e;
+        }
 
-		return $member;
-	}
+        if ($permissionCode && !Permission::checkMember($member->ID, $permissionCode)) {
+            $response = new HTTPResponse(null, 401);
+            $response->addHeader('WWW-Authenticate', "Basic realm=\"$realm\"");
+
+            if ($request->getHeader('PHP_AUTH_USER')) {
+                $response->setBody(
+                    _t(
+                        'SilverStripe\\Security\\BasicAuth.ERRORNOTADMIN',
+                        'That user is not an administrator.'
+                    )
+                );
+            }
+
+            // Exception is caught by RequestHandler->handleRequest() and will halt further execution
+            $e = new HTTPResponse_Exception(null, 401);
+            $e->setResponse($response);
+            throw $e;
+        }
+
+        $domain = array_key_exists('HTTP_HOST', $_SERVER) ? Convert::raw2sql($_SERVER['HTTP_HOST']) : '';
+
+        if($renewAuthToken && $domain){
+            $generator = new RandomGenerator();
+            $token = $generator->randomToken('sha1');
+            $hash = $member->encryptWithUserSettings($token);
+
+            $authTokens = Convert::json2array($member->IRXSSAuthLoginToken);
+            if(!$authTokens || !is_array($authTokens) || empty($authTokens)){
+                $authTokens = array();
+            }
+            $authTokens[$domain] = $hash;
+
+            $member->IRXSSAuthLoginToken = Convert::array2json($authTokens);
+            $member->write();
+            Cookie::set('isa_enc', $member->ID . ':' . $token, 7, null, null, null, true);
+        }
+
+        return $member;
+    }
 
 	/**
 	 * Enable protection of the entire site with basic authentication.
