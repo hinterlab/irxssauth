@@ -1,5 +1,5 @@
 {
-	"name" : "silverstripe-modules/irxssauth",
+	"name" : "internetrix/silverstripe-irxssauth",
 	"type" : "silverstripe-vendormodule",
 	"description" : "Member login authentication when using an internetrix.com.au email, and the user is either an irxstaff or doesn't exist in the production website",
 	"license" : "BSD-3-Clause",
@@ -11,6 +11,9 @@
 	"authors" : [{
 			"name" : "Yuchen Liu",
 			"email" : "yuchen.liu@internetrix.com.au"
+		},{
+			"name" : "Guy Watson",
+			"email" : "guy.watson@internetrix.com.au"
 		}
 	],
 	"require" : {
@@ -31,8 +34,7 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"Internetrix\\Template\\": "src/",
-			"Internetrix\\Template\\Tests\\": "tests/"
+			"Internetrix\\IRXSSAuth\\": "src/"
 		}
 	},
 	"minimum-stability" : "dev"
