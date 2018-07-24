@@ -1,5 +1,5 @@
 {
-	"name" : "silverstripe-modules/irxssauth",
+	"name" : "internetrix/silverstripe-irxssauth",
 	"type" : "silverstripe-vendormodule",
 	"description" : "Member login authentication when using an internetrix.com.au email, and the user is either an irxstaff or doesn't exist in the production website",
 	"license" : "BSD-3-Clause",
@@ -32,6 +32,9 @@
 			"javascript"
 		]
 	},
+	"replace": {
+        "silverstripe-modules/irxssauth": "self.version"
+    },
 	"autoload": {
 		"psr-4": {
 			"Internetrix\\IRXSSAuth\\": "src/"
