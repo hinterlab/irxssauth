@@ -1,9 +1,12 @@
 <?php
-namespace Internetrix\Irxssauth;
+namespace Internetrix\IRXSSAuth\Extensions;
+
 use SilverStripe\Core\Convert;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\ORM\DataExtension;
 use SilverStripe\Security\Group;
+use Internetrix\IRXSSAuth\IRXSSAuthenticator;
+use SilverStripe\Core\Config\Config;
 
 class IRXSSAuthMemberExtension extends DataExtension {
 	
@@ -28,7 +31,7 @@ class IRXSSAuthMemberExtension extends DataExtension {
 		
 		$email = explode('@', $email);
 		
-		$irxEmails = IRXSSAuthenticator::config()->IRXEmailDomains;
+		$irxEmails = Config::forClass(IRXSSAuthenticator::class)->IRXEmailDomains;
 		
 		if(!isset($irxEmails)){
 			return false;

@@ -1,10 +1,12 @@
 <?php
-namespace Internetrix\Irxssauth;
+namespace Internetrix\IRXSSAuth\Forms;
+
+use Internetrix\IRXSSAuth\IRXSSAuthenticator;
 use SilverStripe\Security\MemberAuthenticator\MemberLoginForm;
 
 class IRXSSAuthLoginForm extends MemberLoginForm {
 	
-	protected $authenticator_class = 'IRXSSAuthenticator';
+    protected $authenticator_class = IRXSSAuthenticator::class;
 	
 	public function __construct($controller, $name, $fields = null, $actions = null,
 			$checkCurrentUser = true) {

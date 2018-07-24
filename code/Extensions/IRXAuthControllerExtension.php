@@ -1,5 +1,7 @@
 <?php
-namespace Internetrix\Irxssauth;
+namespace Internetrix\IRXSSAuth\Extensions;
+
+use Internetrix\IRXSSAuth\Security\IRXBasicAuth;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\ORM\DataExtension;
 use SilverStripe\View\Requirements;
@@ -14,7 +16,7 @@ class IRXAuthControllerExtension extends DataExtension {
 				IRXBasicAuth::protect_staging_site_if_necessary();
 			}
 		}
-		Requirements::javascript('irxssauth/javascript/toggle.js');
+		Requirements::javascript('silverstripe-modules/irxssauth:javascript/toggle.js');
 	}
 	
 	public function protect_site_from_indexing() {
@@ -23,7 +25,7 @@ class IRXAuthControllerExtension extends DataExtension {
 				return true;
 			}else{
 				
-				$config = Config::inst()->forClass('IRXBasicAuth');
+				$config = Config::inst()->forClass(IRXBasicAuth::class);
 				$stagingDomains = $config->StagingDomainFeaturedStrings;
 				$isStaging = false;
 				

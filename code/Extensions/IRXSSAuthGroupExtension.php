@@ -1,7 +1,8 @@
 <?php
-namespace Internetrix\Irxssauth;
+namespace Internetrix\IRXSSAuth\Extensions;
 use SilverStripe\ORM\DataExtension;
 use SilverStripe\ORM\DataQuery;
+use SilverStripe\ORM\Queries\SQLSelect;
 use SilverStripe\Security\Group;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\Permission;

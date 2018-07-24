@@ -1,5 +1,5 @@
 <?php
-namespace Internetrix\Irxssauth;
+namespace Internetrix\IRXSSAuth\Security;
 
 use SilverStripe\Control\Cookie;
 use SilverStripe\Control\Director;
@@ -10,6 +10,7 @@ use SilverStripe\Security\Member;
 use SilverStripe\Security\Permission;
 use SilverStripe\Security\RandomGenerator;
 use SilverStripe\Security\Security;
+use SilverStripe\Core\Config\Config;
 
 /**
  * Provides an interface to HTTP basic authentication.
@@ -236,7 +237,7 @@ class IRXBasicAuth {
 	 * please use {@link protect_entire_site()}.
 	 */
 	public static function protect_entire_site_if_necessary() {
-		$config = Config::inst()->forClass('IRXBasicAuth');
+		$config = Config::forClass(IRXBasicAuth::class);
 		if($config->entire_site_protected) {
 			self::requireLogin($config->entire_site_protected_message, $config->entire_site_protected_code, false);
 		}
@@ -255,7 +256,7 @@ class IRXBasicAuth {
 			return false;
 		}
 		
-		$config = Config::inst()->forClass('IRXBasicAuth');
+		$config = Config::forClass(IRXBasicAuth::class);
 		$stagingDomains = $config->StagingDomainFeaturedStrings;
 		$isStaging = false;
 		

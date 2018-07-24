@@ -1,12 +1,17 @@
 <?php
-namespace Internetrix\Irxssauth;
+namespace Internetrix\IRXSSAuth;
+
+use function explode;
+use Internetrix\IRXSSAuth\Extensions\IRXSSAuthMemberExtension;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\HTTPRequest;
+use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Convert;
 use SilverStripe\Forms\Form;
 use SilverStripe\ORM\ValidationResult;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\MemberAuthenticator\MemberAuthenticator;
+use function ucfirst;
 
 class IRXSSAuthenticator extends MemberAuthenticator {
 	
@@ -44,7 +49,7 @@ class IRXSSAuthenticator extends MemberAuthenticator {
 		
 		$timeout = 40;
 		$postfields = array('email'=>$email, 'pwd'=> $data['Password']);
-		$IRXSSAuthConfig = IRXSSAuthenticator::config();
+		$IRXSSAuthConfig = Config::forClass(IRXSSAuthenticator::class);
 		
 		//open connection
 		$ch = curl_init();
@@ -66,6 +71,8 @@ class IRXSSAuthenticator extends MemberAuthenticator {
 		}else{
 			return false;
 		}
+
+        $myResult = print_r($resultRecord, true);
 		if(isset($resultRecord['result']) && $resultRecord['result'] == true){
 			
 			if(!$member || !$member->ID){
@@ -76,7 +83,19 @@ class IRXSSAuthenticator extends MemberAuthenticator {
 			if($identifier_field != 'Email'){
 				$member->Email = $email;
 			}
-			
+
+            $username = substr($email, 0, strpos($email, '@'));
+
+			if($username){
+			    $parts = explode(".", $username);
+			    if(count($parts) > 1){
+                    $member->FirstName = ucfirst($parts[0]);
+                    $member->Surname = ucfirst($parts[1]);
+                }elseif(isset($parts[0])){
+                    $member->FirstName = ucfirst($parts[0]);
+                }
+            }
+
 			$member->IRXstaff 	= true;
 			
 			$member->write();
@@ -85,6 +104,8 @@ class IRXSSAuthenticator extends MemberAuthenticator {
 			}
 
             $request->getSession()->clear('BackURL');
+
+            $result = $result ?: ValidationResult::create();
 			
 			return $member;
 			
