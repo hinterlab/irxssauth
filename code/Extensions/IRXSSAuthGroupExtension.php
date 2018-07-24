@@ -1,10 +1,18 @@
 <?php
+namespace Internetrix\IRXSSAuth\Extensions;
+use SilverStripe\ORM\DataExtension;
+use SilverStripe\ORM\DataQuery;
+use SilverStripe\ORM\Queries\SQLSelect;
+use SilverStripe\Security\Group;
+use SilverStripe\Security\Member;
+use SilverStripe\Security\Permission;
+
 class IRXSSAuthGroupExtension extends DataExtension {
 	
 	/**
 	 * Update any requests to hide irx group in admin security page.
 	 */
-	function augmentSQL(SQLQuery &$query, DataQuery &$dataQuery = null) {
+	function augmentSQL(SQLSelect $query, DataQuery $dataQuery = null) {
 		$memberDO = Member::currentUser ();
 		
 		// if not irxstaff, then hide irxstaff group

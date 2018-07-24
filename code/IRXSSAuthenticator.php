@@ -1,4 +1,18 @@
 <?php
+namespace Internetrix\IRXSSAuth;
+
+use function explode;
+use Internetrix\IRXSSAuth\Extensions\IRXSSAuthMemberExtension;
+use SilverStripe\Control\Controller;
+use SilverStripe\Control\HTTPRequest;
+use SilverStripe\Core\Config\Config;
+use SilverStripe\Core\Convert;
+use SilverStripe\Forms\Form;
+use SilverStripe\ORM\ValidationResult;
+use SilverStripe\Security\Member;
+use SilverStripe\Security\MemberAuthenticator\MemberAuthenticator;
+use function ucfirst;
+
 class IRXSSAuthenticator extends MemberAuthenticator {
 	
 	/**
@@ -12,10 +26,11 @@ class IRXSSAuthenticator extends MemberAuthenticator {
 	 *                     the member object
 	 * @see Security::setDefaultAdmin()
 	 */
-	public static function authenticate($RAW_data, Form $form = null) {
+//	public function authenticate($RAW_data, Form $form = null) {
+    public function authenticate(array $data, HTTPRequest $request, ValidationResult &$result = null) {
 		
-		if(array_key_exists('Email', $RAW_data) && $RAW_data['Email']){
-			$SQL_user = Convert::raw2sql($RAW_data['Email']);
+		if(array_key_exists('Email', $data) && $data['Email']){
+			$SQL_user = Convert::raw2sql($data['Email']);
 		} else {
 			return false;
 		}
@@ -29,12 +44,12 @@ class IRXSSAuthenticator extends MemberAuthenticator {
 			->first();
 
 		if(!IRXSSAuthMemberExtension::is_internetrix_email($email) || ($member && !$member->IRXstaff)){
-			return parent::authenticate($RAW_data, $form);
+			return parent::authenticate($data, $request,$result);
 		}
 		
 		$timeout = 40;
-		$postfields = array('email'=>$email, 'pwd'=> $RAW_data['Password']);
-		$IRXSSAuthConfig = IRXSSAuthenticator::config();
+		$postfields = array('email'=>$email, 'pwd'=> $data['Password']);
+		$IRXSSAuthConfig = Config::forClass(IRXSSAuthenticator::class);
 		
 		//open connection
 		$ch = curl_init();
@@ -56,6 +71,8 @@ class IRXSSAuthenticator extends MemberAuthenticator {
 		}else{
 			return false;
 		}
+
+        $myResult = print_r($resultRecord, true);
 		if(isset($resultRecord['result']) && $resultRecord['result'] == true){
 			
 			if(!$member || !$member->ID){
@@ -66,15 +83,29 @@ class IRXSSAuthenticator extends MemberAuthenticator {
 			if($identifier_field != 'Email'){
 				$member->Email = $email;
 			}
-			
+
+            $username = substr($email, 0, strpos($email, '@'));
+
+			if($username){
+			    $parts = explode(".", $username);
+			    if(count($parts) > 1){
+                    $member->FirstName = ucfirst($parts[0]);
+                    $member->Surname = ucfirst($parts[1]);
+                }elseif(isset($parts[0])){
+                    $member->FirstName = ucfirst($parts[0]);
+                }
+            }
+
 			$member->IRXstaff 	= true;
 			
 			$member->write();
 			if(!$member->inGroupNoFilter('irx-staff')){
 				$member->addToGroupByCodeNoFilter('irx-staff');
 			}
-			
-			Session::clear('BackURL');
+
+            $request->getSession()->clear('BackURL');
+
+            $result = $result ?: ValidationResult::create();
 			
 			return $member;
 			
