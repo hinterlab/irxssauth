@@ -109,14 +109,13 @@ class IRXSSAuthenticator extends MemberAuthenticator
 
             return $member;
 
+        } else {
+            return $result->addError(_t(
+                'SilverStripe\\Security\\Member.ERRORWRONGCRED',
+                "The provided details don't seem to be correct. Please try again."
+            ));
         }
-
-        return $result->addError(_t(
-            'SilverStripe\\Security\\Member.ERRORWRONGCRED',
-            "The provided details don't seem to be correct. Please try again."
-        ));
-
-
+        return null;
     }
 
     public static function get_login_form(Controller $controller)
