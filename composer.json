@@ -29,7 +29,8 @@
 		"installer-name": "irxssauth",
 		"expose": [
 			"css",
-			"javascript"
+			"javascript",
+			"images"
 		]
 	},
 	"replace": {
