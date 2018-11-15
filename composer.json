@@ -28,9 +28,7 @@
 	"extra": {
 		"installer-name": "irxssauth",
 		"expose": [
-			"css",
-			"javascript",
-			"images"
+			"client"
 		]
 	},
 	"replace": {

@@ -12,6 +12,7 @@ use SilverStripe\Forms\Form;
 use SilverStripe\ORM\ValidationResult;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\MemberAuthenticator\MemberAuthenticator;
+use Internetrix\IRXSSAuth\Forms\IRXSSAuthLoginForm;
 use function ucfirst;
 
 class IRXSSAuthenticator extends MemberAuthenticator

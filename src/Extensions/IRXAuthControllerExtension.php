@@ -16,8 +16,8 @@ class IRXAuthControllerExtension extends DataExtension {
 				IRXBasicAuth::protect_staging_site_if_necessary();
 			}
 		}
-		Requirements::javascript('internetrix/silverstripe-irxssauth:javascript/toggle.js');
-        Requirements::css('internetrix/silverstripe-irxssauth:css/lock.css');
+		Requirements::javascript('internetrix/silverstripe-irxssauth:client/javascript/toggle.js');
+        Requirements::css('internetrix/silverstripe-irxssauth:client/css/lock.css');
 	}
 	
 	public function protect_site_from_indexing() {
