@@ -35,3 +35,6 @@ Internetrix\IRXSSAuth\Security\IRXBasicAuth:
 SilverStripe\Control\Controller:
   extensions:
     - Internetrix\IRXSSAuth\Extensions\IRXAuthControllerExtension
+SilverStripe\Security\MemberAuthenticator\MemberLoginForm:
+  extensions:
+    - Internetrix\IRXSSAuth\Extensions\IRXAuthMemberLoginExtension
