@@ -3,6 +3,7 @@
 namespace Internetrix\IRXSSAuth;
 
 use Internetrix\IRXSSAuth\Extensions\IRXSSAuthMemberExtension;
+use Internetrix\IRXSSAuth\Forms\IRXSSAuthLoginForm;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Core\Config\Config;
