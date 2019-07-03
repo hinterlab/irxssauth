@@ -32,7 +32,7 @@ Or put this redirect rule as a workaround
 
 To enable protection on staging site domains from access by external visitors, put the following in _ss_environment.php file: 
 
-`define('IRX_USE_STAGE_AUTH', true);`
+`define('SS_USE_BASIC_AUTH', true);`
 IMPORTANT: Remove or set it to be false when you visit the site for the first time in this session and need to do dev/build or a flush.
 
 
