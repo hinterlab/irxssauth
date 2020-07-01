@@ -2,6 +2,7 @@
 Name: irxssauth
 After:
   - '#coresecurity'
+  - '#mfa-authenticator'
 ---
 
 SilverStripe\Core\Injector\Injector:

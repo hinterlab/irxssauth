@@ -14,6 +14,9 @@ use SilverStripe\Forms\Form;
 use SilverStripe\ORM\ValidationResult;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\MemberAuthenticator\MemberAuthenticator;
+use SilverStripe\Security\MemberAuthenticator\LoginHandler;
+use SilverStripe\Security\MemberAuthenticator\ChangePasswordHandler;
+use function class_exists;
 
 class IRXSSAuthenticator extends MemberAuthenticator
 {
@@ -125,7 +128,26 @@ class IRXSSAuthenticator extends MemberAuthenticator
     {
         return IRXSSAuthLoginForm::create($controller, "LoginForm")
             ->addExtraClass('IRXSSAuthLoginForm')
-            ->setHTMLID('MemberLoginForm_LoginForm'); //need to set HTMLID so form messages from Security::permissionFailure continue to work 
+            ->setHTMLID('MemberLoginForm_LoginForm'); //need to set HTMLID so form messages from Security::permissionFailure continue to work
+    }
+
+    public function getLoginHandler($link)
+    {
+        if(class_exists('\SilverStripe\MFA\Authenticator\LoginHandler')){
+            return \SilverStripe\MFA\Authenticator\LoginHandler::create($link, $this);
+        }else{
+            return LoginHandler::create($link, $this);
+        }
+
+    }
+
+    public function getChangePasswordHandler($link)
+    {
+        if(class_exists('\SilverStripe\MFA\Authenticator\ChangePasswordHandler')){
+            return \SilverStripe\MFA\Authenticator\ChangePasswordHandler::create($link, $this);
+        }else{
+            return ChangePasswordHandler::create($link, $this);
+        }
     }
 
 }
