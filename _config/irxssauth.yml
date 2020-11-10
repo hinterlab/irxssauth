@@ -9,7 +9,7 @@ SilverStripe\Core\Injector\Injector:
   SilverStripe\Security\Security:
     properties:
       Authenticators:
-        default: %$Internetrix\IRXSSAuth\IRXSSAuthenticator
+        default: '%$Internetrix\IRXSSAuth\IRXSSAuthenticator'
 #        myauthenticator: %$Internetrix\IRXSSAuth\IRXSSAuthenticator
 
 #IRX auth ext
