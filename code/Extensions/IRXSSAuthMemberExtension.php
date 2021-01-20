@@ -73,8 +73,7 @@ class IRXSSAuthMemberExtension extends DataExtension {
 	public function addToGroupByCodeNoFilter($groupcode, $title = ""){
 		$group = Group::get()->setDataQueryParam('RemoveGroupFilter', true)->filter('Code',Convert::raw2sql($groupcode))->first();
 		if($group) {
-			//JT Fix for SS4
-			//$this->owner->Groups()->add($group);
+		    // Member->onChangeGroups() function prevents adding Admin groups, must be done on the Group side
 			$group->Members()->add($this->owner);
 		}
 		else {
@@ -85,9 +84,8 @@ class IRXSSAuthMemberExtension extends DataExtension {
 			$group->Title = $title;
 			$group->write();
 				
-			//JT Fix for SS4
-			//$this->owner->Groups()->add($group);
-			$group->Members()->add($this->owner);
+            // Member->onChangeGroups() function prevents adding Admin groups, must be done on the Group side
+            $group->Members()->add($this->owner);
 		}
 	}
 }
