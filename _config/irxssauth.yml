@@ -29,6 +29,7 @@ Internetrix\IRXSSAuth\IRXSSAuthenticator:
   IRXEmailDomains:
     - 'internetrix.com.au'
     - 'irx.io'
+    - 'xpon.ai'
 Internetrix\IRXSSAuth\Security\IRXBasicAuth:
   StagingDomainFeaturedStrings:
     - 'anchor.net.au'
